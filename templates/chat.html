@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+        #chat-container {
+            width: 50%;
+            max-width: 600px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #messages {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 8px;
+            margin-bottom: 16px;
+            background: #f9f9f9;
+        }
+        .message {
+            margin: 8px 0;
+        }
+        .user {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .bot {
+            font-weight: bold;
+            color: #28a745;
+        }
+        #input-container {
+            display: flex;
+        }
+        #prompt {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #send {
+            padding: 8px 16px;
+            border: none;
+            background: #007bff;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+        #send:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Execute Me Not Chat Bot</h1>
+    <div id="chat-container">
+        <div id="messages"></div>
+        <div id="input-container">
+            <input type="text" id="prompt" placeholder="Type your message here..." />
+            <button id="send">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const messagesDiv = document.getElementById("messages");
+        const promptInput = document.getElementById("prompt");
+        const sendButton = document.getElementById("send");
+
+        sendButton.addEventListener("click", async () => {
+            const userPrompt = promptInput.value.trim();
+            if (!userPrompt) return;
+
+            // Display user message
+            const userMessage = document.createElement("div");
+            userMessage.className = "message user";
+            userMessage.textContent = `You: ${userPrompt}`;
+            messagesDiv.appendChild(userMessage);
+
+            // Clear input
+            promptInput.value = "";
+
+            try {
+                // Send POST request to /ask endpoint
+                const response = await fetch("/ask", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ prompt: userPrompt }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Display bot response
+                const botMessage = document.createElement("div");
+                botMessage.className = "message bot";
+                botMessage.textContent = `Bot: ${data.output}`;
+                messagesDiv.appendChild(botMessage);
+            } catch (error) {
+                // Display error message
+                const errorMessage = document.createElement("div");
+                errorMessage.className = "message bot";
+                errorMessage.textContent = `Error: ${error.message}`;
+                messagesDiv.appendChild(errorMessage);
+            }
+
+            // Scroll to the bottom
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        });
+    </script>
+</body>
+</html>
