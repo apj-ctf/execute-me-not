@@ -31,11 +31,18 @@ def ask():
     error=""
     try:
         output = {}
-        exec(code, {"__builtins__": __builtins__}, output)
-        result = output.get("result", "No result found - you need to store the output in a variable called result")
+        #prepend the prompt as a comment
+        code_with_comment = f"# Original prompt: {user_prompt}\n{code}"
+        exec(code_with_comment, {"__builtins__": __builtins__}, output)
+        result = output.get("result")
+        if result is None:
+            result = "No result found - you need to store the output in a variable called result"
+        else:
+            result = result + '\n' + code_with_comment
     except Exception as e:
         error = str(e)
         result = f"Error executing code: {error} \n\nResponse:\n{code}"
+
 
     return jsonify({
         "generated_code": code,
