@@ -1,5 +1,6 @@
 import os
 from google import genai
+import re
 
 # Load the Google API key from environment variables
 api_key = os.getenv("GOOGLE_API_KEY")
@@ -18,6 +19,14 @@ def generate_response(prompt):
         )
         # Extract the Python code from the response
         text = response.candidates[0].content.parts[0].text
-        return text
+        return markdown_to_plain_text(text)
     except Exception as e:
-        raise Exception(f"Error generating response: {str(e)}")
+        raise Exception(f"Error generating code: {str(e)}")
+
+def markdown_to_plain_text(markdown_text):
+    # Remove code blocks (e.g., ```python ... ```)
+    plain_text = re.sub(r"```[a-zA-Z]*\n(.*?)```", r"\n\1\n", markdown_text, flags=re.DOTALL)    # Remove inline code (e.g., `code`)
+    plain_text = re.sub(r"`(.*?)`", r"\1", plain_text)
+    # Remove other Markdown formatting (e.g., **bold**, *italic*, etc.), but keep parentheses
+    plain_text = re.sub(r"(\*\*|\*|_|~|#|>|-|\+|\[|\])", "", plain_text)
+    return plain_text
