@@ -1,6 +1,5 @@
 import os
 import google.generativeai as genai
-import re
 from google.generativeai.generative_models import GenerativeModel
 
 # Load the Google API key from environment variables
