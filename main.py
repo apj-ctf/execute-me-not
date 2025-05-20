@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
-from llm_gemini import generate_code
+import llm_gemini
+
 
 app = Flask(__name__)
 
@@ -15,7 +16,7 @@ def ask():
     if not any(keyword in user_prompt.lower() for keyword in ["python"]):
         # If it's a general question, return the Gemini response directly
         try:
-            gemini_response = generate_code(user_prompt)
+            gemini_response = llm_gemini.generate_response(user_prompt)
             return jsonify({
                 "generated_code": None,
                 "output": gemini_response
@@ -26,7 +27,7 @@ def ask():
             }), 500
 
 
-    code = generate_code(user_prompt)
+    code = llm_gemini.generate_response(user_prompt)
 
     error=""
     try:
