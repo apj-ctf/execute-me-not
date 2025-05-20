@@ -90,8 +90,7 @@
             return doc.documentElement.textContent.replace(/\n/g, "<br>");
         }
 
-
-        sendButton.addEventListener("click", async () => {
+        async function sendMessage() {
             const userPrompt = promptInput.value.trim();
             if (!userPrompt) return;
 
@@ -136,6 +135,16 @@
 
             // Scroll to the bottom
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        sendButton.addEventListener("click", sendMessage);
+
+        // Add event listener for Enter key
+        promptInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevent default form submission
+                sendMessage();
+            }
         });
     </script>
 </body>
