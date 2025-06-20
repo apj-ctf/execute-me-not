@@ -11,6 +11,9 @@ if not api_key:
 genai.configure(api_key=api_key)
 # Initialize the model
 model = GenerativeModel(model_name="gemini-2.0-flash-001")
+# remove the API key from the environment to avoid accidental exposure
+del api_key
+os.environ.pop("GOOGLE_API_KEY", None)
 
 def generate_response(prompt):
     try:
